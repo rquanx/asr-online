@@ -1,12 +1,24 @@
 'use client';
 
+import { useCallback } from 'react';
 import VoiceRecognizer from './components/VoiceRecognizer';
-import { createSherpaService, createXunfeiService } from './services/speechRecognition';
+import { createSherpaService, createXunfeiService, SherpaNcnnService } from './services/speechRecognition';
 
 export default function Home() {
   // 创建语音识别服务实例
-  const sherpaService = createSherpaService();
+  const sherpaService = createSherpaService() as SherpaNcnnService;
   const xunfeiService = createXunfeiService();
+
+  // 处理模型切换
+  const handleModelChange = useCallback((modelId: string) => {
+    console.log('切换到模型:', modelId);
+    sherpaService.setModel(modelId);
+  }, [sherpaService]);
+
+  // 获取可用模型列表
+  const getAvailableModels = useCallback(async () => {
+    return await sherpaService.getAvailableModels();
+  }, [sherpaService]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
@@ -29,6 +41,8 @@ export default function Home() {
             onRecognize={async (audioBlob) => {
               return await sherpaService.recognize(audioBlob);
             }}
+            onModelChange={handleModelChange}
+            getAvailableModels={getAvailableModels}
             className="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200"
           />
         </div>

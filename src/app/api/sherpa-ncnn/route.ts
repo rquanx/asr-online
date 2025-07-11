@@ -3,28 +3,20 @@ import { SherpaRecognizer } from '../../sherpa/index';
 import { writeFile } from 'fs/promises';
 import { join } from 'path';
 import os from 'os';
+import fs from 'fs';
 
 // 全局实例，避免重复初始化
-let recognizerInstance: SherpaRecognizer | null = null;
+const recognizerInstance = new SherpaRecognizer();
 
 async function getRecognizer(model: string): Promise<SherpaRecognizer> {
-  if (!recognizerInstance) {
-    recognizerInstance = new SherpaRecognizer();
-
-    // 根据环境选择合适的模型
-    const modelName = model || 'moonshine-tiny-en';
-
-    try {
-      await recognizerInstance.loadModel(modelName);
-      console.log(`Sherpa-ONNX 模型初始化成功: ${modelName}`);
-    } catch (error) {
-      console.error('模型初始化失败:', error);
-      // 如果初始化失败，返回null，使用模拟模式
-      recognizerInstance = null;
-      throw error;
-    }
+  try {
+    await recognizerInstance.loadModel(model);
+    console.log(`Sherpa-ONNX 模型初始化成功: ${model}`);
+  } catch (error) {
+    console.error('模型初始化失败:', error);
+    // 如果初始化失败，返回null，使用模拟模式
+    throw error;
   }
-
   return recognizerInstance;
 }
 
@@ -56,7 +48,7 @@ export async function POST(request: NextRequest) {
       console.log(`临时音频文件保存至: ${tempFilePath}`);
 
       // 使用 sherpa-onnx 进行识别
-      const text = await recognizer.recognizeFromFile(tempFilePath);
+      const text = await recognizer.recognize(model, tempFilePath);
 
       // 清理临时文件
       try {
@@ -72,7 +64,7 @@ export async function POST(request: NextRequest) {
         text: text || '未识别到语音内容',
         status: 'success',
         engine: 'sherpa-onnx',
-        model: recognizer.getCurrentModel()
+        model: model
       });
 
     } catch (recognitionError) {
@@ -128,7 +120,6 @@ export async function GET() {
 
     return NextResponse.json({
       availableModels,
-      currentModel: recognizerInstance?.getCurrentModel() || null,
       status: 'ready'
     });
   } catch (error) {

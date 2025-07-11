@@ -18,3 +18,9 @@ Dolphin: 清华的多语言模式
 2.在服务器下载模型在线运行(需要服务器资源)
 3.内置到移动端运行
 - pubget
+
+
+
+需要训练模型 → sherpa（PyTorch）。
+部署到服务器/PC → sherpa-onnx（ONNX Runtime）。
+部署到手机/边缘设备 → sherpa-ncnn（NCNN）。

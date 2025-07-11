@@ -1,40 +1,56 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
+import { webmToWav } from '../wav';
+
+
+
+interface Model {
+  id: string;
+  name: string;
+  url?: string;
+}
 
 interface VoiceRecognizerProps {
   title: string;
   onRecognize: (audioBlob: Blob) => Promise<string>;
+  onModelChange?: (modelId: string) => void;
+  getAvailableModels?: () => Promise<Model[]>;
   className?: string;
 }
 
-const VoiceRecognizer: React.FC<VoiceRecognizerProps> = ({ 
-  title, 
-  onRecognize, 
-  className = '' 
+const VoiceRecognizer: React.FC<VoiceRecognizerProps> = ({
+  title,
+  onRecognize,
+  onModelChange,
+  getAvailableModels,
+  className = ''
 }) => {
   const [isRecording, setIsRecording] = useState(false);
   const [recognitionHistory, setRecognitionHistory] = useState<string[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [availableModels, setAvailableModels] = useState<Model[]>([]);
+  const [selectedModel, setSelectedModel] = useState<string>('zipformer-zh-en');
+  const [isLoadingModels, setIsLoadingModels] = useState(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
 
   const startRecording = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ 
-        audio: { 
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: {
           sampleRate: 16000,
           channelCount: 1,
           echoCancellation: true,
           noiseSuppression: true,
           autoGainControl: true
-        } 
+        }
       });
-      
+
       const mediaRecorder = new MediaRecorder(stream, {
         mimeType: 'audio/webm;codecs=opus'
       });
-      
+
       mediaRecorderRef.current = mediaRecorder;
       chunksRef.current = [];
 
@@ -45,9 +61,9 @@ const VoiceRecognizer: React.FC<VoiceRecognizerProps> = ({
       });
 
       mediaRecorder.addEventListener('stop', async () => {
-        const audioBlob = new Blob(chunksRef.current, { type: 'audio/webm' });
+        const audioBlob = await webmToWav(chunksRef.current[chunksRef.current.length - 1]);
         setIsProcessing(true);
-        
+
         try {
           const result = await onRecognize(audioBlob);
           if (result.trim()) {
@@ -126,6 +142,36 @@ const VoiceRecognizer: React.FC<VoiceRecognizerProps> = ({
     };
   }, [isRecording]);
 
+  // 加载可用模型列表
+  useEffect(() => {
+    const loadModels = async () => {
+      if (getAvailableModels) {
+        setIsLoadingModels(true);
+        try {
+          const models = await getAvailableModels();
+          setAvailableModels(models);
+          // 如果当前选择的模型不在列表中，选择第一个可用模型
+          if (models.length > 0 && !models.find(m => m.id === selectedModel)) {
+            setSelectedModel(models[0].id);
+            onModelChange?.(models[0].id);
+          }
+        } catch (error) {
+          console.error('加载模型列表失败:', error);
+        } finally {
+          setIsLoadingModels(false);
+        }
+      }
+    };
+
+    loadModels();
+  }, [getAvailableModels]);
+
+  // 处理模型选择变化
+  const handleModelChange = (modelId: string) => {
+    setSelectedModel(modelId);
+    onModelChange?.(modelId);
+  };
+
   return (
     <div className={`bg-white rounded-lg shadow-lg p-6 ${className}`}>
       {/* 标题 */}
@@ -133,16 +179,52 @@ const VoiceRecognizer: React.FC<VoiceRecognizerProps> = ({
         {title}
       </h2>
 
+      {/* 模型选择器 */}
+      {getAvailableModels && (
+        <div className="mb-6">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            选择识别模型
+          </label>
+          <div className="relative">
+            <select
+              value={selectedModel}
+              onChange={(e) => handleModelChange(e.target.value)}
+              disabled={isRecording || isProcessing || isLoadingModels}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white disabled:bg-gray-100 disabled:cursor-not-allowed"
+            >
+              {isLoadingModels ? (
+                <option>加载模型列表中...</option>
+              ) : availableModels.length === 0 ? (
+                <option>暂无可用模型</option>
+              ) : (
+                availableModels.map((model) => (
+                  <option key={model.id} value={model.id}>
+                    {model.name}
+                  </option>
+                ))
+              )}
+            </select>
+            {isLoadingModels && (
+              <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+              </div>
+            )}
+          </div>
+          <p className="text-xs text-gray-500 mt-1">
+            当前模型: {availableModels.find(m => m.id === selectedModel)?.name || selectedModel}
+          </p>
+        </div>
+      )}
+
       {/* 录音按钮 */}
       <div className="flex justify-center mb-6">
         <button
-          className={`w-20 h-20 rounded-full font-semibold text-white transition-all duration-200 select-none ${
-            isRecording
-              ? 'bg-red-500 scale-110 shadow-lg animate-pulse'
-              : isProcessing
+          className={`w-20 h-20 rounded-full font-semibold text-white transition-all duration-200 select-none ${isRecording
+            ? 'bg-red-500 scale-110 shadow-lg animate-pulse'
+            : isProcessing
               ? 'bg-gray-400 cursor-not-allowed'
               : 'bg-blue-500 hover:bg-blue-600 active:scale-95 shadow-md'
-          }`}
+            }`}
           onMouseDown={handleMouseDown}
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseUp} // 鼠标离开时也停止录音
