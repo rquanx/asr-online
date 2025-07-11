@@ -145,7 +145,10 @@ class ModelDownloader {
 
       const pushPath = (from: any, to: any) => {
         for (const [key, filename] of Object.entries(from)) {
-          if (typeof filename === 'object') {
+          if (['modelType', 'language', 'task', 'tailPaddings', ''].includes(key)) {
+            to[key] = filename
+          }
+          else if (typeof filename === 'object') {
             if (!to[key]) {
               to[key] = {}
             }
