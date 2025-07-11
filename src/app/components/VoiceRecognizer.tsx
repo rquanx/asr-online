@@ -67,11 +67,11 @@ const VoiceRecognizer: React.FC<VoiceRecognizerProps> = ({
         try {
           const result = await onRecognize(audioBlob);
           if (result.trim()) {
-            setRecognitionHistory(prev => [...prev, result]);
+            setRecognitionHistory(prev => [result, ...prev]);
           }
         } catch (error) {
           console.error('Recognition error:', error);
-          setRecognitionHistory(prev => [...prev, '识别失败，请重试']);
+          setRecognitionHistory(prev => ['识别失败，请重试', ...prev,]);
         } finally {
           setIsProcessing(false);
         }

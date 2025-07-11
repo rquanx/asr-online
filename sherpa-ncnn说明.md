@@ -24,3 +24,11 @@ Dolphin: 清华的多语言模式
 需要训练模型 → sherpa（PyTorch）。
 部署到服务器/PC → sherpa-onnx（ONNX Runtime）。
 部署到手机/边缘设备 → sherpa-ncnn（NCNN）。
+
+
+模型:https://k2-fsa.github.io/sherpa/onnx/pretrained_models/online-transducer/index.html
+
+https://github.com/k2-fsa/sherpa-onnx/releases/tag/asr-models
+
+
+https://pub.dev/packages/sherpa_onnx
