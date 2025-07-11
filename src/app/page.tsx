@@ -1,103 +1,64 @@
-import Image from "next/image";
+'use client';
+
+import VoiceRecognizer from './components/VoiceRecognizer';
+import { createSherpaService, createXunfeiService } from './services/speechRecognition';
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  // 创建语音识别服务实例
+  const sherpaService = createSherpaService();
+  const xunfeiService = createXunfeiService();
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+      {/* 页面标题 */}
+      <div className="text-center py-8">
+        <h1 className="text-4xl font-bold text-gray-800 mb-2">
+          语音识别演示
+        </h1>
+        <p className="text-gray-600 text-lg">
+          比较不同语音识别服务的效果
+        </p>
+      </div>
+
+      {/* 主要内容区域 */}
+      <div className="max-w-6xl mx-auto space-y-8">
+        {/* 上半部分 - Sherpa-NCNN */}
+        <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-xl p-6">
+          <VoiceRecognizer
+            title="🚀 Sherpa-NCNN 语音识别"
+            onRecognize={async (audioBlob) => {
+              return await sherpaService.recognize(audioBlob);
+            }}
+            className="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200"
+          />
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
+
+        {/* 分隔线 */}
+        <div className="flex items-center justify-center">
+          <div className="flex-1 h-px bg-gray-300"></div>
+          <div className="px-4 text-gray-500 font-medium">VS</div>
+          <div className="flex-1 h-px bg-gray-300"></div>
+        </div>
+
+        {/* 下半部分 - 讯飞语音 */}
+        <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-xl p-6">
+          <VoiceRecognizer
+            title="🎤 讯飞语音识别"
+            onRecognize={async (audioBlob) => {
+              return await xunfeiService.recognize(audioBlob);
+            }}
+            className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200"
           />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+        </div>
+      </div>
+
+      {/* 页面底部信息 */}
+      <div className="text-center py-8 text-gray-500">
+        <p className="mb-2">长按录音按钮开始录音，松开停止并开始识别</p>
+        <p className="text-sm">
+          支持桌面端和移动端，需要麦克风权限
+        </p>
+      </div>
     </div>
   );
 }
