@@ -3,12 +3,11 @@
 import { useCallback } from 'react';
 import VoiceRecognizer from './components/VoiceRecognizer';
 import XunfeiVoiceRecognizer from './components/XunfeiVoiceRecognizer';
-import { createSherpaService, createXunfeiService, SherpaNcnnService } from './services/speechRecognition';
+import { createSherpaService, SherpaNcnnService } from './services/speechRecognition';
 
 export default function Home() {
   // 创建语音识别服务实例
   const sherpaService = createSherpaService() as SherpaNcnnService;
-  const xunfeiService = createXunfeiService();
 
   // 处理模型切换
   const handleModelChange = useCallback((modelId: string) => {

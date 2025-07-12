@@ -4,9 +4,6 @@ const fs = require('fs');
 const CopyPlugin = require('copy-webpack-plugin');
 
 const nextConfig: NextConfig = {
-  outputFileTracingIncludes: {
-    '/api/sherpa-ncnn': ['./sherpa-onnx-wasm-nodejs.wasm']
-  },
   webpack: (config, { isServer }) => {
     // if (isServer) {
     // 找到 WASM 文件在 node_modules 中的位置

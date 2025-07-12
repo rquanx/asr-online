@@ -10,8 +10,9 @@ export default class XfyunASR {
     const options = this.options
     this.recorder = new RecorderManager('.')
     let iatWS
-    let resultText = ''
-    let resultTextTemp = ''
+    this.resultText = ''
+    this.resultTextTemp = ''
+    let that = this
 
     /**
      * 获取websocket url
@@ -60,14 +61,14 @@ export default class XfyunASR {
         if (data.pgs) {
           if (data.pgs === 'apd') {
             // 将resultTextTemp同步给resultText
-            resultText = resultTextTemp
+            that.resultText = that.resultTextTemp
           }
           // 将结果存储在resultTextTemp中
-          resultTextTemp = resultText + str
+          that.resultTextTemp = that.resultText + str
         } else {
-          resultText = resultText + str
+          that.resultText = that.resultText + str
         }
-        options?.onRender?.(resultTextTemp || resultText || '')
+        options?.onRender?.(that.resultTextTemp || that.resultText || '')
       }
       if (jsonData.code === 0 && jsonData.data.status === 2) {
         iatWS.close()
@@ -148,5 +149,7 @@ export default class XfyunASR {
   start() {}
   stop() {
     this.recorder.stop()
+    this.resultText = ''
+    this.resultTextTemp = ''
   }
 }

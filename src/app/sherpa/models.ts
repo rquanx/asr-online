@@ -39,16 +39,17 @@ export const CHINESE_MODELS = [
       tokens: 'tokens.txt'
     }
   },
-  {
-    id: 'whisper',
-    name: '500mb whisper-distil-large-v2',
-    url: 'https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-whisper-distil-large-v2.tar.bz2',
-    modelConfig: {
-      whisper: {
-        encoder: 'distil-large-v2-encoder.int8.onnx',
-        decoder: 'distil-large-v2-decoder.int8.onnx',
-      },
-      tokens: 'distil-large-v2-tokens.txt',
-    }
-  }
+  // 不知道哪配置错了
+  // {
+  //   id: 'whisper',
+  //   name: '500mb whisper-distil-large-v2',
+  //   url: 'https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-whisper-distil-large-v2.tar.bz2',
+  //   modelConfig: {
+  //     whisper: {
+  //       encoder: 'distil-large-v2-encoder.int8.onnx',
+  //       decoder: 'distil-large-v2-decoder.int8.onnx',
+  //     },
+  //     tokens: 'distil-large-v2-tokens.txt',
+  //   }
+  // }
 ]

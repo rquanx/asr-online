@@ -25,11 +25,11 @@ const XunfeiVoiceRecognizer: React.FC<XunfeiVoiceRecognizerProps> = ({
 
   // 创建识别器实例
   const createRecognizer = async () => {
+    let resultText = ''
     if (recognizerRef.current) {
       recognizerRef.current.stop();
       return;
     }
-    let resultText = ''
     recognizerRef.current = new XfyunASR({
       appId,
       apiKey,
@@ -42,7 +42,8 @@ const XunfeiVoiceRecognizer: React.FC<XunfeiVoiceRecognizerProps> = ({
         setIsProcessing(false);
         setIsRecording(false);
         if (resultText) {
-          setRecognitionHistory(prev => [resultText, ...prev]);
+          let t = resultText
+          setRecognitionHistory(prev => [t, ...prev]);
         }
         resultText = ''
       },
