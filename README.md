@@ -21,6 +21,22 @@
 npm install
 ```
 
+### 配置环境变量
+
+创建 `.env.local` 文件：
+
+```bash
+# 讯飞语音 API 配置
+NEXT_PUBLIC_XFYUN_APP_ID=your_app_id_here
+NEXT_PUBLIC_XFYUN_API_KEY=your_api_key_here
+NEXT_PUBLIC_XFYUN_API_SECRET=your_api_secret_here
+
+# Sherpa-ONNX 模型配置（可选）
+SHERPA_MODEL=moonshine-tiny-en
+```
+
+> 💡 提示：请到 [讯飞开放平台](https://www.xfyun.cn/) 注册并获取您的 API 密钥
+
 ### 启动开发服务器
 
 ```bash
@@ -62,10 +78,11 @@ npm run dev
 
 ### 下半部分 - 讯飞语音识别
 
-- 使用讯飞语音WebSocket实时识别API
-- 自动转换音频格式为PCM 16kHz
-- 实现了完整的认证和数据传输流程
-- 支持中文普通话识别
+- **xfyun-sdk 集成**: 使用官方 xfyun-sdk 库，更稳定可靠
+- **自动连接管理**: SDK 自动处理 WebSocket 连接和重连
+- **实时识别**: 支持实时语音识别和结果返回
+- **智能错误处理**: 自动处理网络错误和识别失败
+- **中文优化**: 专门优化中文普通话识别效果
 
 ## 🛠 技术栈
 
@@ -74,7 +91,7 @@ npm run dev
 - **音频处理**: Web Audio API + MediaRecorder API
 - **语音识别**: 
   - Sherpa-ONNX (本地模型 + 动态下载)
-  - 讯飞语音WebSocket API
+  - xfyun-sdk (讯飞语音官方SDK)
 - **加密**: crypto-js (HMAC-SHA256签名)
 - **语言**: TypeScript
 
@@ -84,7 +101,8 @@ npm run dev
 src/
 ├── app/
 │   ├── components/
-│   │   └── VoiceRecognizer.tsx     # 语音识别组件
+│   │   ├── VoiceRecognizer.tsx     # 通用语音识别组件
+│   │   └── XunfeiVoiceRecognizer.tsx # 讯飞语音识别专用组件 (xfyun-sdk)
 │   ├── services/
 │   │   └── speechRecognition.ts    # 语音识别服务
 │   ├── sherpa/
@@ -117,10 +135,12 @@ SHERPA_MODEL=moonshine-tiny-en
 
 #### 讯飞语音识别配置
 ```bash
-NEXT_PUBLIC_XUNFEI_APP_ID=your_app_id_here
-NEXT_PUBLIC_XUNFEI_API_KEY=your_api_key_here
-NEXT_PUBLIC_XUNFEI_API_SECRET=your_api_secret_here
+NEXT_PUBLIC_XFYUN_APP_ID=your_app_id_here
+NEXT_PUBLIC_XFYUN_API_KEY=your_api_key_here
+NEXT_PUBLIC_XFYUN_API_SECRET=your_api_secret_here
 ```
+
+> 注意：现在使用 xfyun-sdk 库来实现讯飞语音识别，配置更简单，更稳定。
 
 ## 🌟 特色功能
 

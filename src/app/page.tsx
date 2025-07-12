@@ -2,6 +2,7 @@
 
 import { useCallback } from 'react';
 import VoiceRecognizer from './components/VoiceRecognizer';
+import XunfeiVoiceRecognizer from './components/XunfeiVoiceRecognizer';
 import { createSherpaService, createXunfeiService, SherpaNcnnService } from './services/speechRecognition';
 
 export default function Home() {
@@ -56,11 +57,11 @@ export default function Home() {
 
         {/* 下半部分 - 讯飞语音 */}
         <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-xl p-6">
-          <VoiceRecognizer
-            title="🎤 讯飞语音识别"
-            onRecognize={async (audioBlob) => {
-              return await xunfeiService.recognize(audioBlob);
-            }}
+          <XunfeiVoiceRecognizer
+            title="🎤 讯飞语音识别 (xfyun-sdk)"
+            appId={process.env.NEXT_PUBLIC_XFYUN_APP_ID || ''}
+            apiKey={process.env.NEXT_PUBLIC_XFYUN_API_KEY || ''}
+            apiSecret={process.env.NEXT_PUBLIC_XFYUN_API_SECRET || ''}
             className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200"
           />
         </div>
