@@ -44,6 +44,7 @@ const XunfeiVoiceRecognizer: React.FC<XunfeiVoiceRecognizerProps> = ({
         if (resultText) {
           setRecognitionHistory(prev => [resultText, ...prev]);
         }
+        resultText = ''
       },
       onRender: (text: string) => {
         resultText = text?.trim?.() || ''
